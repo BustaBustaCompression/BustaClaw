@@ -15,5 +15,8 @@ npm-debug.log*
 
 # Editor / OS
 .DS_Store
-.vscode/
 .idea/
+
+# Ignore personal editor settings, but share recommended extensions
+.vscode/*
+!.vscode/extensions.json

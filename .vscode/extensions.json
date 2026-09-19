@@ -1,0 +1,20 @@
+{
+  // Extensions Cursor / VS Code will offer to install when this repo is opened.
+  // Covers the stacks we work in: web (HTML/CSS/TS), Python, Java, and ESP32-S3.
+  "recommendations": [
+    // Web (HTML / CSS / JS / TS) — used by @bustaclaw/web and @bustaclaw/server
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+
+    // Python
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+
+    // Java
+    "vscjava.vscode-java-pack",
+
+    // ESP32-S3 / embedded firmware
+    "platformio.platformio-ide",
+    "espressif.esp-idf-extension"
+  ]
+}
