@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi Equipment Launcher 3.0</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 16px 20px 40px;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .go-button {
+      padding: 8px 16px;
+      background-color: white;
+      color: green;
+      border: 2px solid green;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 4px;
+    }
+    .go-button:hover { background: #f0fff0; }
+    .clear-button {
+      padding: 6px 12px;
+      background: white;
+      color: #444;
+      border: 1px solid #999;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .clear-button:hover { background: #f5f5f5; }
+    .selected-count {
+      font-size: 13px;
+      color: #555;
+      min-width: 5.5em;
+    }
+    .itxe-toggle {
+      font-size: 14px;
+      user-select: none;
+    }
+    .columns {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 8px 18px;
+      margin-top: 12px;
+    }
+    .group {
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 8px;
+    }
+    .group h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+    }
+    .checkbox-label {
+      display: block;
+      font-weight: bold;
+      margin: 4px 0;
+      cursor: pointer;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-left: 8px;
+      accent-color: red;
+    }
+    td { vertical-align: top; }
+    .search-wrap {
+      margin: 0 0 10px 0;
+    }
+    #equipSearch {
+      width: 200px;
+      max-width: 100%;
+      padding: 7px 10px;
+      border: 2px solid #2a6fdb;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    #equipSearch:focus {
+      box-shadow: 0 0 0 3px rgba(42, 111, 219, 0.2);
+    }
+    #equipSearch.match-ok {
+      border-color: #1a7f37;
+      background: #eaf8ee;
+    }
+    #equipSearch.match-bad {
+      border-color: #c62828;
+      background: #fdecea;
+    }
+    .checkbox-label.flash-match {
+      outline: 2px solid #1a7f37;
+      background: #d9f5e1;
+      border-radius: 3px;
+      transition: background 0.4s ease;
+    }
+    .search-hint {
+      display: block;
+      font-size: 11px;
+      color: #777;
+      margin-top: 4px;
+    }
+    .util-wide { width: 560px; }
+    .itxr-wide { width: 280px; }
+
+    .valid-section {
+      margin-top: 8px;
+      margin-left: 12px;
+      padding: 12px 14px 14px;
+      border: 2px solid #555;
+      border-radius: 6px;
+      background: #fff;
+      align-self: flex-start;
+    }
+    .valid-section h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+    }
+    .valid-boxes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .valid-box {
+      display: block;
+      font-weight: bold;
+      margin: 0;
+      padding: 8px 12px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      background: #f7f7f7;
+      cursor: pointer;
+    }
+    .valid-box:hover { background: #eee; }
+    .valid-box.flash-match {
+      outline: 2px solid #1a7f37;
+      background: #d9f5e1;
+    }
+    .j2k-subhead {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      color: #666;
+      margin: 10px 0 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="go-button" type="button" onclick="openSelectedIPs()">GO!</button>
+  <button class="clear-button" type="button" onclick="clearAllSelections()">Clear</button>
+  <span class="selected-count" id="selectedCount">0 selected</span>
+  <label class="itxe-toggle"><input type="checkbox" id="skipITXEs"> Don't Open ITXEs</label>
+</div>
+
+<div class="columns">
+
+  <div class="group">
+    <h3>J2K</h3>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-201" data-aliases="201,J2K 201,RX J2K 201,J2K201"> 201</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-202" data-aliases="202,J2K 202,RX J2K 202,J2K202"> 202</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-203" data-aliases="203,J2K 203,RX J2K 203,J2K203"> 203</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-204" data-aliases="204,J2K 204,RX J2K 204,J2K204"> 204</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-205" data-aliases="205,J2K 205,RX J2K 205,J2K205"> 205</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-206" data-aliases="206,J2K 206,RX J2K 206,J2K206"> 206</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-207" data-aliases="207,J2K 207,RX J2K 207,J2K207"> 207</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-208" data-aliases="208,J2K 208,RX J2K 208,J2K208"> 208</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-209" data-aliases="209,J2K 209,RX J2K 209,J2K209"> 209</label>
+<span class="j2k-subhead">ENC</span>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-251" data-aliases="251,J2K 251,ENC 251,RX J2K 251,J2K251"> 251</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-252" data-aliases="252,J2K 252,ENC 252,RX J2K 252,J2K252"> 252</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-253" data-aliases="253,J2K 253,ENC 253,RX J2K 253,J2K253"> 253</label>
+<span class="j2k-subhead">FIBER</span>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-261" data-aliases="261,J2K 261,FIBER 261,Fiber 261,RX J2K 261,J2K261"> 261</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-262" data-aliases="262,J2K 262,FIBER 262,Fiber 262,RX J2K 262,J2K262"> 262</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-263" data-aliases="263,J2K 263,FIBER 263,Fiber 263,RX J2K 263,J2K263"> 263</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-264" data-aliases="264,J2K 264,FIBER 264,Fiber 264,RX J2K 264,J2K264"> 264</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-265" data-aliases="265,J2K 265,FIBER 265,Fiber 265,RX J2K 265,J2K265"> 265</label>
+<label class="checkbox-label"><input type="checkbox" data-id="j2k-266" data-aliases="266,J2K 266,FIBER 266,Fiber 266,RX J2K 266,J2K266"> 266</label>
+  </div>
+
+  <div class="group">
+    <div class="search-wrap">
+      <input type="text" id="equipSearch" placeholder="Find equipment…" autocomplete="off" spellcheck="false" aria-label="Search equipment">
+      <span class="search-hint">Enter to select · type another · Enter again</span>
+    </div>
+    <h3>MEDIAKIND</h3>
+    <label class="checkbox-label"><input type="checkbox" data-id="mediakind-301" data-aliases="301,MEDIAKIND 301,MK 301,IRD 301,RX IRD 301,RX MEDIAKIND 301,MediaKind 301"> 301</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-302" data-aliases="302,MEDIAKIND 302,MK 302,IRD 302,RX IRD 302,RX MEDIAKIND 302,MediaKind 302"> 302</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-303" data-aliases="303,MEDIAKIND 303,MK 303,IRD 303,RX IRD 303,RX MEDIAKIND 303,MediaKind 303"> 303</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-304" data-aliases="304,MEDIAKIND 304,MK 304,IRD 304,RX IRD 304,RX MEDIAKIND 304,MediaKind 304"> 304</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-305" data-aliases="305,MEDIAKIND 305,MK 305,IRD 305,RX IRD 305,RX MEDIAKIND 305,MediaKind 305"> 305</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-306" data-aliases="306,MEDIAKIND 306,MK 306,IRD 306,RX IRD 306,RX MEDIAKIND 306,MediaKind 306"> 306</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-307" data-aliases="307,MEDIAKIND 307,MK 307,IRD 307,RX IRD 307,RX MEDIAKIND 307,MediaKind 307"> 307</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-308" data-aliases="308,MEDIAKIND 308,MK 308,IRD 308,RX IRD 308,RX MEDIAKIND 308,MediaKind 308"> 308</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-309" data-aliases="309,MEDIAKIND 309,MK 309,IRD 309,RX IRD 309,RX MEDIAKIND 309,MediaKind 309"> 309</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-310" data-aliases="310,MEDIAKIND 310,MK 310,IRD 310,RX IRD 310,RX MEDIAKIND 310,MediaKind 310"> 310</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-311" data-aliases="311,MEDIAKIND 311,MK 311,IRD 311,RX IRD 311,RX MEDIAKIND 311,MediaKind 311"> 311</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-312" data-aliases="312,MEDIAKIND 312,MK 312,IRD 312,RX IRD 312,RX MEDIAKIND 312,MediaKind 312"> 312</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-313" data-aliases="313,MEDIAKIND 313,MK 313,IRD 313,RX IRD 313,RX MEDIAKIND 313,MediaKind 313"> 313</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-314" data-aliases="314,MEDIAKIND 314,MK 314,IRD 314,RX IRD 314,RX MEDIAKIND 314,MediaKind 314"> 314</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-315" data-aliases="315,MEDIAKIND 315,MK 315,IRD 315,RX IRD 315,RX MEDIAKIND 315,MediaKind 315"> 315</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-316" data-aliases="316,MEDIAKIND 316,MK 316,IRD 316,RX IRD 316,RX MEDIAKIND 316,MediaKind 316"> 316</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-317" data-aliases="317,MEDIAKIND 317,MK 317,IRD 317,RX IRD 317,RX MEDIAKIND 317,MediaKind 317"> 317</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-318" data-aliases="318,MEDIAKIND 318,MK 318,IRD 318,RX IRD 318,RX MEDIAKIND 318,MediaKind 318"> 318</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-319" data-aliases="319,MEDIAKIND 319,MK 319,IRD 319,RX IRD 319,RX MEDIAKIND 319,MediaKind 319"> 319</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-320" data-aliases="320,MEDIAKIND 320,MK 320,IRD 320,RX IRD 320,RX MEDIAKIND 320,MediaKind 320"> 320</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-321" data-aliases="321,MEDIAKIND 321,MK 321,IRD 321,RX IRD 321,RX MEDIAKIND 321,MediaKind 321"> 321</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-322" data-aliases="322,MEDIAKIND 322,MK 322,IRD 322,RX IRD 322,RX MEDIAKIND 322,MediaKind 322"> 322</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-323" data-aliases="323,MEDIAKIND 323,MK 323,IRD 323,RX IRD 323,RX MEDIAKIND 323,MediaKind 323"> 323</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-324" data-aliases="324,MEDIAKIND 324,MK 324,IRD 324,RX IRD 324,RX MEDIAKIND 324,MediaKind 324"> 324</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-325" data-aliases="325,MEDIAKIND 325,MK 325,IRD 325,RX IRD 325,RX MEDIAKIND 325,MediaKind 325"> 325</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-326" data-aliases="326,MEDIAKIND 326,MK 326,IRD 326,RX IRD 326,RX MEDIAKIND 326,MediaKind 326"> 326</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-327" data-aliases="327,MEDIAKIND 327,MK 327,IRD 327,RX IRD 327,RX MEDIAKIND 327,MediaKind 327"> 327</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-328" data-aliases="328,MEDIAKIND 328,MK 328,IRD 328,RX IRD 328,RX MEDIAKIND 328,MediaKind 328"> 328</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-329" data-aliases="329,MEDIAKIND 329,MK 329,IRD 329,RX IRD 329,RX MEDIAKIND 329,MediaKind 329"> 329</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-330" data-aliases="330,MEDIAKIND 330,MK 330,IRD 330,RX IRD 330,RX MEDIAKIND 330,MediaKind 330"> 330</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-331" data-aliases="331,MEDIAKIND 331,MK 331,IRD 331,RX IRD 331,RX MEDIAKIND 331,MediaKind 331"> 331</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-332" data-aliases="332,MEDIAKIND 332,MK 332,IRD 332,RX IRD 332,RX MEDIAKIND 332,MediaKind 332"> 332</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-333" data-aliases="333,MEDIAKIND 333,MK 333,IRD 333,RX IRD 333,RX MEDIAKIND 333,MediaKind 333"> 333</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-334" data-aliases="334,MEDIAKIND 334,MK 334,IRD 334,RX IRD 334,RX MEDIAKIND 334,MediaKind 334"> 334</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-335" data-aliases="335,MEDIAKIND 335,MK 335,IRD 335,RX IRD 335,RX MEDIAKIND 335,MediaKind 335"> 335</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-336" data-aliases="336,MEDIAKIND 336,MK 336,IRD 336,RX IRD 336,RX MEDIAKIND 336,MediaKind 336"> 336</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-337" data-aliases="337,MEDIAKIND 337,MK 337,IRD 337,RX IRD 337,RX MEDIAKIND 337,MediaKind 337"> 337</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-338" data-aliases="338,MEDIAKIND 338,MK 338,IRD 338,RX IRD 338,RX MEDIAKIND 338,MediaKind 338"> 338</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-339" data-aliases="339,MEDIAKIND 339,MK 339,IRD 339,RX IRD 339,RX MEDIAKIND 339,MediaKind 339"> 339</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-340" data-aliases="340,MEDIAKIND 340,MK 340,IRD 340,RX IRD 340,RX MEDIAKIND 340,MediaKind 340"> 340</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-341" data-aliases="341,MEDIAKIND 341,MK 341,IRD 341,RX IRD 341,RX MEDIAKIND 341,MediaKind 341"> 341</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-342" data-aliases="342,MEDIAKIND 342,MK 342,IRD 342,RX IRD 342,RX MEDIAKIND 342,MediaKind 342"> 342</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-343" data-aliases="343,MEDIAKIND 343,MK 343,IRD 343,RX IRD 343,RX MEDIAKIND 343,MediaKind 343"> 343</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-344" data-aliases="344,MEDIAKIND 344,MK 344,IRD 344,RX IRD 344,RX MEDIAKIND 344,MediaKind 344"> 344</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-345" data-aliases="345,MEDIAKIND 345,MK 345,IRD 345,RX IRD 345,RX MEDIAKIND 345,MediaKind 345"> 345</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-346" data-aliases="346,MEDIAKIND 346,MK 346,IRD 346,RX IRD 346,RX MEDIAKIND 346,MediaKind 346"> 346</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-347" data-aliases="347,MEDIAKIND 347,MK 347,IRD 347,RX IRD 347,RX MEDIAKIND 347,MediaKind 347"> 347</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-348" data-aliases="348,MEDIAKIND 348,MK 348,IRD 348,RX IRD 348,RX MEDIAKIND 348,MediaKind 348"> 348</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-349" data-aliases="349,MEDIAKIND 349,MK 349,IRD 349,RX IRD 349,RX MEDIAKIND 349,MediaKind 349"> 349</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-350" data-aliases="350,MEDIAKIND 350,MK 350,IRD 350,RX IRD 350,RX MEDIAKIND 350,MediaKind 350"> 350</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-351" data-aliases="351,MEDIAKIND 351,MK 351,IRD 351,RX IRD 351,RX MEDIAKIND 351,MediaKind 351"> 351</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-352" data-aliases="352,MEDIAKIND 352,MK 352,IRD 352,RX IRD 352,RX MEDIAKIND 352,MediaKind 352"> 352</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-353" data-aliases="353,MEDIAKIND 353,MK 353,IRD 353,RX IRD 353,RX MEDIAKIND 353,MediaKind 353"> 353</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-354" data-aliases="354,MEDIAKIND 354,MK 354,IRD 354,RX IRD 354,RX MEDIAKIND 354,MediaKind 354"> 354</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-355" data-aliases="355,MEDIAKIND 355,MK 355,IRD 355,RX IRD 355,RX MEDIAKIND 355,MediaKind 355"> 355</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-356" data-aliases="356,MEDIAKIND 356,MK 356,IRD 356,RX IRD 356,RX MEDIAKIND 356,MediaKind 356"> 356</label>
+<label class="checkbox-label"><input type="checkbox" data-id="mediakind-357" data-aliases="357,MEDIAKIND 357,MK 357,IRD 357,RX IRD 357,RX MEDIAKIND 357,MediaKind 357"> 357</label>
+  </div>
+
+  <div class="group">
+    <h3>ATEME</h3>
+    <label class="checkbox-label"><input type="checkbox" data-id="ateme-401" data-aliases="401,ATEME 401,IRD 401,RX IRD 401,RX ATEME 401,IRD 401 TDT"> 401</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-402" data-aliases="402,ATEME 402,IRD 402,RX IRD 402,RX ATEME 402,IRD 402 TDT"> 402</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-403" data-aliases="403,ATEME 403,IRD 403,RX IRD 403,RX ATEME 403,IRD 403 TDT"> 403</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-404" data-aliases="404,ATEME 404,IRD 404,RX IRD 404,RX ATEME 404,IRD 404 TDT"> 404</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-405" data-aliases="405,ATEME 405,IRD 405,RX IRD 405,RX ATEME 405,IRD 405 TDT"> 405</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-406" data-aliases="406,ATEME 406,IRD 406,RX IRD 406,RX ATEME 406,IRD 406 TDT"> 406</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-407" data-aliases="407,ATEME 407,IRD 407,RX IRD 407,RX ATEME 407,IRD 407 TDT"> 407</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-408" data-aliases="408,ATEME 408,IRD 408,RX IRD 408,RX ATEME 408,IRD 408 TDT"> 408</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-409" data-aliases="409,ATEME 409,IRD 409,RX IRD 409,RX ATEME 409,IRD 409 TDT"> 409</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-410" data-aliases="410,ATEME 410,IRD 410,RX IRD 410,RX ATEME 410,IRD 410 TDT"> 410</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-411" data-aliases="411,ATEME 411,IRD 411,RX IRD 411,RX ATEME 411,IRD 411 TDT"> 411</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-412" data-aliases="412,ATEME 412,IRD 412,RX IRD 412,RX ATEME 412,IRD 412 TDT"> 412</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-413" data-aliases="413,ATEME 413,IRD 413,RX IRD 413,RX ATEME 413,IRD 413 TDT"> 413</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-414" data-aliases="414,ATEME 414,IRD 414,RX IRD 414,RX ATEME 414,IRD 414 TDT"> 414</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-415" data-aliases="415,ATEME 415,IRD 415,RX IRD 415,RX ATEME 415,IRD 415 TDT"> 415</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-416" data-aliases="416,ATEME 416,IRD 416,RX IRD 416,RX ATEME 416,IRD 416 TDT"> 416</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-417" data-aliases="417,ATEME 417,IRD 417,RX IRD 417,RX ATEME 417,IRD 417 TDT"> 417</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-418" data-aliases="418,ATEME 418,IRD 418,RX IRD 418,RX ATEME 418,IRD 418 TDT"> 418</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-419" data-aliases="419,ATEME 419,IRD 419,RX IRD 419,RX ATEME 419,IRD 419 TDT"> 419</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-420" data-aliases="420,ATEME 420,IRD 420,RX IRD 420,RX ATEME 420,IRD 420 TDT"> 420</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-421" data-aliases="421,ATEME 421,IRD 421,RX IRD 421,RX ATEME 421,IRD 421 TDT"> 421</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-422" data-aliases="422,ATEME 422,IRD 422,RX IRD 422,RX ATEME 422,IRD 422 TDT"> 422</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-423" data-aliases="423,ATEME 423,IRD 423,RX IRD 423,RX ATEME 423,IRD 423 TDT"> 423</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-424" data-aliases="424,ATEME 424,IRD 424,RX IRD 424,RX ATEME 424,IRD 424 TDT"> 424</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-425" data-aliases="425,ATEME 425,IRD 425,RX IRD 425,RX ATEME 425,IRD 425 TDT"> 425</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-426" data-aliases="426,ATEME 426,IRD 426,RX IRD 426,RX ATEME 426,IRD 426 TDT"> 426</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-427" data-aliases="427,ATEME 427,IRD 427,RX IRD 427,RX ATEME 427,IRD 427 TDT"> 427</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-428" data-aliases="428,ATEME 428,IRD 428,RX IRD 428,RX ATEME 428,IRD 428 TDT"> 428</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-429" data-aliases="429,ATEME 429,IRD 429,RX IRD 429,RX ATEME 429,IRD 429 TDT"> 429</label>
+<label class="checkbox-label"><input type="checkbox" data-id="ateme-430" data-aliases="430,ATEME 430,IRD 430,RX IRD 430,RX ATEME 430,IRD 430 TDT"> 430</label>
+  </div>
+
+  <div class="group">
+    <h3>ADTEC</h3>
+    <label class="checkbox-label"><input type="checkbox" data-id="adtec-701" data-aliases="701,ADTEC 701,IRD 701,IRD-701,RX IRD 701,RX ADTEC 701"> 701</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-702" data-aliases="702,ADTEC 702,IRD 702,IRD-702,RX IRD 702,RX ADTEC 702"> 702</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-703" data-aliases="703,ADTEC 703,IRD 703,IRD-703,RX IRD 703,RX ADTEC 703"> 703</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-704" data-aliases="704,ADTEC 704,IRD 704,IRD-704,RX IRD 704,RX ADTEC 704"> 704</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-705" data-aliases="705,ADTEC 705,IRD 705,IRD-705,RX IRD 705,RX ADTEC 705"> 705</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-706" data-aliases="706,ADTEC 706,IRD 706,IRD-706,RX IRD 706,RX ADTEC 706"> 706</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-707" data-aliases="707,ADTEC 707,IRD 707,IRD-707,RX IRD 707,RX ADTEC 707"> 707</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-708" data-aliases="708,ADTEC 708,IRD 708,IRD-708,RX IRD 708,RX ADTEC 708"> 708</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-709" data-aliases="709,ADTEC 709,IRD 709,IRD-709,RX IRD 709,RX ADTEC 709"> 709</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-710" data-aliases="710,ADTEC 710,IRD 710,IRD-710,RX IRD 710,RX ADTEC 710"> 710</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-711" data-aliases="711,ADTEC 711,IRD 711,IRD-711,RX IRD 711,RX ADTEC 711"> 711</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-712" data-aliases="712,ADTEC 712,IRD 712,IRD-712,RX IRD 712,RX ADTEC 712"> 712</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-713" data-aliases="713,ADTEC 713,IRD 713,IRD-713,RX IRD 713,RX ADTEC 713"> 713</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-714" data-aliases="714,ADTEC 714,IRD 714,IRD-714,RX IRD 714,RX ADTEC 714"> 714</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-715" data-aliases="715,ADTEC 715,IRD 715,IRD-715,RX IRD 715,RX ADTEC 715"> 715</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-716" data-aliases="716,ADTEC 716,IRD 716,IRD-716,RX IRD 716,RX ADTEC 716"> 716</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-717" data-aliases="717,ADTEC 717,IRD 717,IRD-717,RX IRD 717,RX ADTEC 717"> 717</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-718" data-aliases="718,ADTEC 718,IRD 718,IRD-718,RX IRD 718,RX ADTEC 718"> 718</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-719" data-aliases="719,ADTEC 719,IRD 719,IRD-719,RX IRD 719,RX ADTEC 719"> 719</label>
+<label class="checkbox-label"><input type="checkbox" data-id="adtec-720" data-aliases="720,ADTEC 720,IRD 720,IRD-720,RX IRD 720,RX ADTEC 720"> 720</label>
+  </div>
+
+  <div class="group util-wide">
+    <h3>UTIL ITXEs</h3>
+    <table>
+      <tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-01" data-aliases="1,01,UTIL 1,UTIL ITXE 1,UTIL ITXE 01,ITXE 1,UTIL ITXE1"> 1</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-21" data-aliases="21,21,UTIL 21,UTIL ITXE 21,UTIL ITXE 21,ITXE 21,UTIL ITXE21"> 21</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-41" data-aliases="41,41,UTIL 41,UTIL ITXE 41,UTIL ITXE 41,ITXE 41,UTIL ITXE41"> 41</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-02" data-aliases="2,02,UTIL 2,UTIL ITXE 2,UTIL ITXE 02,ITXE 2,UTIL ITXE2"> 2</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-22" data-aliases="22,22,UTIL 22,UTIL ITXE 22,UTIL ITXE 22,ITXE 22,UTIL ITXE22"> 22</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-42" data-aliases="42,42,UTIL 42,UTIL ITXE 42,UTIL ITXE 42,ITXE 42,UTIL ITXE42"> 42</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-03" data-aliases="3,03,UTIL 3,UTIL ITXE 3,UTIL ITXE 03,ITXE 3,UTIL ITXE3"> 3</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-23" data-aliases="23,23,UTIL 23,UTIL ITXE 23,UTIL ITXE 23,ITXE 23,UTIL ITXE23"> 23</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-43" data-aliases="43,43,UTIL 43,UTIL ITXE 43,UTIL ITXE 43,ITXE 43,UTIL ITXE43"> 43</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-04" data-aliases="4,04,UTIL 4,UTIL ITXE 4,UTIL ITXE 04,ITXE 4,UTIL ITXE4"> 4</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-24" data-aliases="24,24,UTIL 24,UTIL ITXE 24,UTIL ITXE 24,ITXE 24,UTIL ITXE24"> 24</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-44" data-aliases="44,44,UTIL 44,UTIL ITXE 44,UTIL ITXE 44,ITXE 44,UTIL ITXE44"> 44</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-05" data-aliases="5,05,UTIL 5,UTIL ITXE 5,UTIL ITXE 05,ITXE 5,UTIL ITXE5"> 5</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-25" data-aliases="25,25,UTIL 25,UTIL ITXE 25,UTIL ITXE 25,ITXE 25,UTIL ITXE25"> 25</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-45" data-aliases="45,45,UTIL 45,UTIL ITXE 45,UTIL ITXE 45,ITXE 45,UTIL ITXE45"> 45</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-06" data-aliases="6,06,UTIL 6,UTIL ITXE 6,UTIL ITXE 06,ITXE 6,UTIL ITXE6"> 6</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-26" data-aliases="26,26,UTIL 26,UTIL ITXE 26,UTIL ITXE 26,ITXE 26,UTIL ITXE26"> 26</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-46" data-aliases="46,46,UTIL 46,UTIL ITXE 46,UTIL ITXE 46,ITXE 46,UTIL ITXE46"> 46</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-07" data-aliases="7,07,UTIL 7,UTIL ITXE 7,UTIL ITXE 07,ITXE 7,UTIL ITXE7"> 7</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-27" data-aliases="27,27,UTIL 27,UTIL ITXE 27,UTIL ITXE 27,ITXE 27,UTIL ITXE27"> 27</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-47" data-aliases="47,47,UTIL 47,UTIL ITXE 47,UTIL ITXE 47,ITXE 47,UTIL ITXE47"> 47</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-08" data-aliases="8,08,UTIL 8,UTIL ITXE 8,UTIL ITXE 08,ITXE 8,UTIL ITXE8"> 8</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-28" data-aliases="28,28,UTIL 28,UTIL ITXE 28,UTIL ITXE 28,ITXE 28,UTIL ITXE28"> 28</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-48" data-aliases="48,48,UTIL 48,UTIL ITXE 48,UTIL ITXE 48,ITXE 48,UTIL ITXE48"> 48</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-09" data-aliases="9,09,UTIL 9,UTIL ITXE 9,UTIL ITXE 09,ITXE 9,UTIL ITXE9"> 9</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-29" data-aliases="29,29,UTIL 29,UTIL ITXE 29,UTIL ITXE 29,ITXE 29,UTIL ITXE29"> 29</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-49" data-aliases="49,49,UTIL 49,UTIL ITXE 49,UTIL ITXE 49,ITXE 49,UTIL ITXE49"> 49</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-10" data-aliases="10,10,UTIL 10,UTIL ITXE 10,UTIL ITXE 10,ITXE 10,UTIL ITXE10"> 10</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-30" data-aliases="30,30,UTIL 30,UTIL ITXE 30,UTIL ITXE 30,ITXE 30,UTIL ITXE30"> 30</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-50" data-aliases="50,50,UTIL 50,UTIL ITXE 50,UTIL ITXE 50,ITXE 50,UTIL ITXE50"> 50</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-11" data-aliases="11,11,UTIL 11,UTIL ITXE 11,UTIL ITXE 11,ITXE 11,UTIL ITXE11"> 11</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-31" data-aliases="31,31,UTIL 31,UTIL ITXE 31,UTIL ITXE 31,ITXE 31,UTIL ITXE31"> 31</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-51" data-aliases="51,51,UTIL 51,UTIL ITXE 51,UTIL ITXE 51,ITXE 51,UTIL ITXE51"> 51</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-12" data-aliases="12,12,UTIL 12,UTIL ITXE 12,UTIL ITXE 12,ITXE 12,UTIL ITXE12"> 12</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-32" data-aliases="32,32,UTIL 32,UTIL ITXE 32,UTIL ITXE 32,ITXE 32,UTIL ITXE32"> 32</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-52" data-aliases="52,52,UTIL 52,UTIL ITXE 52,UTIL ITXE 52,ITXE 52,UTIL ITXE52"> 52</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-13" data-aliases="13,13,UTIL 13,UTIL ITXE 13,UTIL ITXE 13,ITXE 13,UTIL ITXE13"> 13</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-33" data-aliases="33,33,UTIL 33,UTIL ITXE 33,UTIL ITXE 33,ITXE 33,UTIL ITXE33"> 33</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-53" data-aliases="53,53,UTIL 53,UTIL ITXE 53,UTIL ITXE 53,ITXE 53,UTIL ITXE53"> 53</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-14" data-aliases="14,14,UTIL 14,UTIL ITXE 14,UTIL ITXE 14,ITXE 14,UTIL ITXE14"> 14</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-34" data-aliases="34,34,UTIL 34,UTIL ITXE 34,UTIL ITXE 34,ITXE 34,UTIL ITXE34"> 34</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-90" data-aliases="90,90,UTIL 90,UTIL ITXE 90,UTIL ITXE 90,ITXE 90,UTIL ITXE90"> 90</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-15" data-aliases="15,15,UTIL 15,UTIL ITXE 15,UTIL ITXE 15,ITXE 15,UTIL ITXE15"> 15</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-35" data-aliases="35,35,UTIL 35,UTIL ITXE 35,UTIL ITXE 35,ITXE 35,UTIL ITXE35"> 35</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-91" data-aliases="91,91,UTIL 91,UTIL ITXE 91,UTIL ITXE 91,ITXE 91,UTIL ITXE91"> 91</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-16" data-aliases="16,16,UTIL 16,UTIL ITXE 16,UTIL ITXE 16,ITXE 16,UTIL ITXE16"> 16</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-36" data-aliases="36,36,UTIL 36,UTIL ITXE 36,UTIL ITXE 36,ITXE 36,UTIL ITXE36"> 36</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-92" data-aliases="92,92,UTIL 92,UTIL ITXE 92,UTIL ITXE 92,ITXE 92,UTIL ITXE92"> 92</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-17" data-aliases="17,17,UTIL 17,UTIL ITXE 17,UTIL ITXE 17,ITXE 17,UTIL ITXE17"> 17</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-37" data-aliases="37,37,UTIL 37,UTIL ITXE 37,UTIL ITXE 37,ITXE 37,UTIL ITXE37"> 37</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-93" data-aliases="93,93,UTIL 93,UTIL ITXE 93,UTIL ITXE 93,ITXE 93,UTIL ITXE93"> 93</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-18" data-aliases="18,18,UTIL 18,UTIL ITXE 18,UTIL ITXE 18,ITXE 18,UTIL ITXE18"> 18</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-38" data-aliases="38,38,UTIL 38,UTIL ITXE 38,UTIL ITXE 38,ITXE 38,UTIL ITXE38"> 38</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-94" data-aliases="94,94,UTIL 94,UTIL ITXE 94,UTIL ITXE 94,ITXE 94,UTIL ITXE94"> 94</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-19" data-aliases="19,19,UTIL 19,UTIL ITXE 19,UTIL ITXE 19,ITXE 19,UTIL ITXE19"> 19</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-39" data-aliases="39,39,UTIL 39,UTIL ITXE 39,UTIL ITXE 39,ITXE 39,UTIL ITXE39"> 39</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-95" data-aliases="95,95,UTIL 95,UTIL ITXE 95,UTIL ITXE 95,ITXE 95,UTIL ITXE95"> 95</label></td></tr>
+<tr><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-20" data-aliases="20,20,UTIL 20,UTIL ITXE 20,UTIL ITXE 20,ITXE 20,UTIL ITXE20"> 20</label></td><td style="padding-right: 20px;"><label class="checkbox-label"><input type="checkbox" data-id="util-40" data-aliases="40,40,UTIL 40,UTIL ITXE 40,UTIL ITXE 40,ITXE 40,UTIL ITXE40"> 40</label></td><td style="padding-right: 20px;"></td></tr>
+    </table>
+  </div>
+
+  <div class="group itxr-wide">
+    <h3>UTIL ITXRs</h3>
+    <table>
+      <tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-001" data-aliases="1,001,UTIL ITXR 1,UTIL ITXR 001,ITXR 1,ITXR 001"> 1</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-025" data-aliases="25,025,UTIL ITXR 25,UTIL ITXR 025,ITXR 25,ITXR 025"> 25</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-049" data-aliases="49,049,UTIL ITXR 49,UTIL ITXR 049,ITXR 49,ITXR 049"> 49</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-002" data-aliases="2,002,UTIL ITXR 2,UTIL ITXR 002,ITXR 2,ITXR 002"> 2</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-026" data-aliases="26,026,UTIL ITXR 26,UTIL ITXR 026,ITXR 26,ITXR 026"> 26</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-050" data-aliases="50,050,UTIL ITXR 50,UTIL ITXR 050,ITXR 50,ITXR 050"> 50</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-003" data-aliases="3,003,UTIL ITXR 3,UTIL ITXR 003,ITXR 3,ITXR 003"> 3</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-027" data-aliases="27,027,UTIL ITXR 27,UTIL ITXR 027,ITXR 27,ITXR 027"> 27</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-051" data-aliases="51,051,UTIL ITXR 51,UTIL ITXR 051,ITXR 51,ITXR 051"> 51</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-004" data-aliases="4,004,UTIL ITXR 4,UTIL ITXR 004,ITXR 4,ITXR 004"> 4</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-028" data-aliases="28,028,UTIL ITXR 28,UTIL ITXR 028,ITXR 28,ITXR 028"> 28</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-052" data-aliases="52,052,UTIL ITXR 52,UTIL ITXR 052,ITXR 52,ITXR 052"> 52</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-005" data-aliases="5,005,UTIL ITXR 5,UTIL ITXR 005,ITXR 5,ITXR 005"> 5</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-029" data-aliases="29,029,UTIL ITXR 29,UTIL ITXR 029,ITXR 29,ITXR 029"> 29</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-053" data-aliases="53,053,UTIL ITXR 53,UTIL ITXR 053,ITXR 53,ITXR 053"> 53</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-006" data-aliases="6,006,UTIL ITXR 6,UTIL ITXR 006,ITXR 6,ITXR 006"> 6</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-030" data-aliases="30,030,UTIL ITXR 30,UTIL ITXR 030,ITXR 30,ITXR 030"> 30</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-054" data-aliases="54,054,UTIL ITXR 54,UTIL ITXR 054,ITXR 54,ITXR 054"> 54</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-007" data-aliases="7,007,UTIL ITXR 7,UTIL ITXR 007,ITXR 7,ITXR 007"> 7</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-031" data-aliases="31,031,UTIL ITXR 31,UTIL ITXR 031,ITXR 31,ITXR 031"> 31</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-055" data-aliases="55,055,UTIL ITXR 55,UTIL ITXR 055,ITXR 55,ITXR 055"> 55</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-008" data-aliases="8,008,UTIL ITXR 8,UTIL ITXR 008,ITXR 8,ITXR 008"> 8</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-032" data-aliases="32,032,UTIL ITXR 32,UTIL ITXR 032,ITXR 32,ITXR 032"> 32</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-056" data-aliases="56,056,UTIL ITXR 56,UTIL ITXR 056,ITXR 56,ITXR 056"> 56</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-009" data-aliases="9,009,UTIL ITXR 9,UTIL ITXR 009,ITXR 9,ITXR 009"> 9</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-033" data-aliases="33,033,UTIL ITXR 33,UTIL ITXR 033,ITXR 33,ITXR 033"> 33</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-057" data-aliases="57,057,UTIL ITXR 57,UTIL ITXR 057,ITXR 57,ITXR 057"> 57</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-010" data-aliases="10,010,UTIL ITXR 10,UTIL ITXR 010,ITXR 10,ITXR 010"> 10</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-034" data-aliases="34,034,UTIL ITXR 34,UTIL ITXR 034,ITXR 34,ITXR 034"> 34</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-058" data-aliases="58,058,UTIL ITXR 58,UTIL ITXR 058,ITXR 58,ITXR 058"> 58</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-011" data-aliases="11,011,UTIL ITXR 11,UTIL ITXR 011,ITXR 11,ITXR 011"> 11</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-035" data-aliases="35,035,UTIL ITXR 35,UTIL ITXR 035,ITXR 35,ITXR 035"> 35</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-059" data-aliases="59,059,UTIL ITXR 59,UTIL ITXR 059,ITXR 59,ITXR 059"> 59</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-012" data-aliases="12,012,UTIL ITXR 12,UTIL ITXR 012,ITXR 12,ITXR 012"> 12</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-036" data-aliases="36,036,UTIL ITXR 36,UTIL ITXR 036,ITXR 36,ITXR 036"> 36</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-060" data-aliases="60,060,UTIL ITXR 60,UTIL ITXR 060,ITXR 60,ITXR 060"> 60</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-013" data-aliases="13,013,UTIL ITXR 13,UTIL ITXR 013,ITXR 13,ITXR 013"> 13</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-037" data-aliases="37,037,UTIL ITXR 37,UTIL ITXR 037,ITXR 37,ITXR 037"> 37</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-061" data-aliases="61,061,UTIL ITXR 61,UTIL ITXR 061,ITXR 61,ITXR 061"> 61</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-014" data-aliases="14,014,UTIL ITXR 14,UTIL ITXR 014,ITXR 14,ITXR 014"> 14</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-038" data-aliases="38,038,UTIL ITXR 38,UTIL ITXR 038,ITXR 38,ITXR 038"> 38</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-062" data-aliases="62,062,UTIL ITXR 62,UTIL ITXR 062,ITXR 62,ITXR 062"> 62</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-015" data-aliases="15,015,UTIL ITXR 15,UTIL ITXR 015,ITXR 15,ITXR 015"> 15</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-039" data-aliases="39,039,UTIL ITXR 39,UTIL ITXR 039,ITXR 39,ITXR 039"> 39</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-063" data-aliases="63,063,UTIL ITXR 63,UTIL ITXR 063,ITXR 63,ITXR 063"> 63</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-016" data-aliases="16,016,UTIL ITXR 16,UTIL ITXR 016,ITXR 16,ITXR 016"> 16</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-040" data-aliases="40,040,UTIL ITXR 40,UTIL ITXR 040,ITXR 40,ITXR 040"> 40</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-064" data-aliases="64,064,UTIL ITXR 64,UTIL ITXR 064,ITXR 64,ITXR 064"> 64</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-017" data-aliases="17,017,UTIL ITXR 17,UTIL ITXR 017,ITXR 17,ITXR 017"> 17</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-041" data-aliases="41,041,UTIL ITXR 41,UTIL ITXR 041,ITXR 41,ITXR 041"> 41</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-065" data-aliases="65,065,UTIL ITXR 65,UTIL ITXR 065,ITXR 65,ITXR 065"> 65</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-018" data-aliases="18,018,UTIL ITXR 18,UTIL ITXR 018,ITXR 18,ITXR 018"> 18</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-042" data-aliases="42,042,UTIL ITXR 42,UTIL ITXR 042,ITXR 42,ITXR 042"> 42</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-066" data-aliases="66,066,UTIL ITXR 66,UTIL ITXR 066,ITXR 66,ITXR 066"> 66</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-019" data-aliases="19,019,UTIL ITXR 19,UTIL ITXR 019,ITXR 19,ITXR 019"> 19</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-043" data-aliases="43,043,UTIL ITXR 43,UTIL ITXR 043,ITXR 43,ITXR 043"> 43</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-067" data-aliases="67,067,UTIL ITXR 67,UTIL ITXR 067,ITXR 67,ITXR 067"> 67</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-020" data-aliases="20,020,UTIL ITXR 20,UTIL ITXR 020,ITXR 20,ITXR 020"> 20</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-044" data-aliases="44,044,UTIL ITXR 44,UTIL ITXR 044,ITXR 44,ITXR 044"> 44</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-068" data-aliases="68,068,UTIL ITXR 68,UTIL ITXR 068,ITXR 68,ITXR 068"> 68</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-021" data-aliases="21,021,UTIL ITXR 21,UTIL ITXR 021,ITXR 21,ITXR 021"> 21</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-045" data-aliases="45,045,UTIL ITXR 45,UTIL ITXR 045,ITXR 45,ITXR 045"> 45</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-069" data-aliases="69,069,UTIL ITXR 69,UTIL ITXR 069,ITXR 69,ITXR 069"> 69</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-022" data-aliases="22,022,UTIL ITXR 22,UTIL ITXR 022,ITXR 22,ITXR 022"> 22</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-046" data-aliases="46,046,UTIL ITXR 46,UTIL ITXR 046,ITXR 46,ITXR 046"> 46</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-070" data-aliases="70,070,UTIL ITXR 70,UTIL ITXR 070,ITXR 70,ITXR 070"> 70</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-023" data-aliases="23,023,UTIL ITXR 23,UTIL ITXR 023,ITXR 23,ITXR 023"> 23</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-047" data-aliases="47,047,UTIL ITXR 47,UTIL ITXR 047,ITXR 47,ITXR 047"> 47</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-071" data-aliases="71,071,UTIL ITXR 71,UTIL ITXR 071,ITXR 71,ITXR 071"> 71</label></td></tr>
+<tr><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-024" data-aliases="24,024,UTIL ITXR 24,UTIL ITXR 024,ITXR 24,ITXR 024"> 24</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-048" data-aliases="48,048,UTIL ITXR 48,UTIL ITXR 048,ITXR 48,ITXR 048"> 48</label></td><td style="padding-right: 16px;"><label class="checkbox-label"><input type="checkbox" data-id="itxr-072" data-aliases="72,072,UTIL ITXR 72,UTIL ITXR 072,ITXR 72,ITXR 072"> 72</label></td></tr>
+    </table>
+  </div>
+
+  <div class="group">
+    <h3>STB</h3>
+    <label class="checkbox-label"><input type="checkbox" data-id="stb-1" data-aliases="1,STB 1,RX STB 1,STB1"> 1</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-2" data-aliases="2,STB 2,RX STB 2,STB2"> 2</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-3" data-aliases="3,STB 3,RX STB 3,STB3"> 3</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-4" data-aliases="4,STB 4,RX STB 4,STB4"> 4</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-5" data-aliases="5,STB 5,RX STB 5,STB5"> 5</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-6" data-aliases="6,STB 6,RX STB 6,STB6"> 6</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-7" data-aliases="7,STB 7,RX STB 7,STB7"> 7</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-8" data-aliases="8,STB 8,RX STB 8,STB8"> 8</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-9" data-aliases="9,STB 9,RX STB 9,STB9"> 9</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-10" data-aliases="10,STB 10,RX STB 10,STB10"> 10</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-11" data-aliases="11,STB 11,RX STB 11,STB11"> 11</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-12" data-aliases="12,STB 12,RX STB 12,STB12"> 12</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-13" data-aliases="13,STB 13,RX STB 13,STB13"> 13</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-14" data-aliases="14,STB 14,RX STB 14,STB14"> 14</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-15" data-aliases="15,STB 15,RX STB 15,STB15"> 15</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-16" data-aliases="16,STB 16,RX STB 16,STB16"> 16</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-17" data-aliases="17,STB 17,RX STB 17,STB17"> 17</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-18" data-aliases="18,STB 18,RX STB 18,STB18"> 18</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-19" data-aliases="19,STB 19,RX STB 19,STB19"> 19</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-20" data-aliases="20,STB 20,RX STB 20,STB20"> 20</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-21" data-aliases="21,STB 21,RX STB 21,STB21"> 21</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-22" data-aliases="22,STB 22,RX STB 22,STB22"> 22</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-23" data-aliases="23,STB 23,RX STB 23,STB23"> 23</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-24" data-aliases="24,STB 24,RX STB 24,STB24"> 24</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-25" data-aliases="25,STB 25,RX STB 25,STB25"> 25</label>
+<label class="checkbox-label"><input type="checkbox" data-id="stb-26" data-aliases="26,STB 26,RX STB 26,STB26"> 26</label>
+  </div>
+
+  <div class="group valid-section">
+    <h3>VALID</h3>
+    <div class="valid-boxes">
+            <label class="valid-box checkbox-label"><input type="checkbox" data-id="valid-31" data-aliases="31,VALID 31,VALID31,MatchBox 31,MatchBox Reader 31,RX VALID 31"> VALID 31</label>
+      <label class="valid-box checkbox-label"><input type="checkbox" data-id="valid-32" data-aliases="32,VALID 32,VALID32,MatchBox 32,MatchBox Reader 32,RX VALID 32"> VALID 32</label>
+      <label class="valid-box checkbox-label"><input type="checkbox" data-id="valid-33" data-aliases="33,VALID 33,VALID33,MatchBox 33,MatchBox Reader 33,RX VALID 33"> VALID 33</label>
+      <label class="valid-box checkbox-label"><input type="checkbox" data-id="valid-34" data-aliases="34,VALID 34,VALID34,MatchBox 34,MatchBox Reader 34,RX VALID 34"> VALID 34</label>
+      <label class="valid-box checkbox-label"><input type="checkbox" data-id="valid-35" data-aliases="35,VALID 35,VALID35,MatchBox 35,MatchBox Reader 35,RX VALID 35"> VALID 35</label>
+      <label class="valid-box checkbox-label"><input type="checkbox" data-id="valid-36" data-aliases="36,VALID 36,VALID36,MatchBox 36,MatchBox Reader 36,RX VALID 36"> VALID 36</label>
+      <label class="valid-box checkbox-label"><input type="checkbox" data-id="valid-37" data-aliases="37,VALID 37,VALID37,MatchBox 37,MatchBox Reader 37,RX VALID 37"> VALID 37</label>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+const ipMap = {
+  "adtec-701": ["http://10.202.82.105/", "http://10.193.9.94/"],
+  "adtec-702": ["http://10.202.82.106/", "http://10.193.9.134/"],
+  "adtec-703": ["http://10.202.82.107/", "http://10.193.9.101/"],
+  "adtec-704": ["http://10.202.82.108/", "http://10.193.9.136/"],
+  "adtec-705": ["http://10.202.82.109/", "http://10.193.9.97/"],
+  "adtec-706": ["http://10.202.82.110/", "http://10.193.9.142/"],
+  "adtec-707": ["http://10.202.82.111/", "http://10.193.9.103/"],
+  "adtec-708": ["http://10.202.82.112/", "http://10.193.9.138/"],
+  "adtec-709": ["http://10.202.82.113/", "http://10.193.9.99/"],
+  "adtec-710": ["http://10.202.82.114/", "http://10.193.9.144/"],
+  "adtec-711": ["http://10.202.82.115/", "http://10.193.9.96/"],
+  "adtec-712": ["http://10.202.82.116/", "http://10.193.9.141/"],
+  "adtec-713": ["http://10.202.82.117/", "http://10.193.9.102/"],
+  "adtec-714": ["http://10.202.82.118/", "http://10.193.9.137/"],
+  "adtec-715": ["http://10.202.82.119/", "http://10.193.9.98/"],
+  "adtec-716": ["http://10.202.82.120/", "http://10.193.9.143/"],
+  "adtec-717": ["http://10.202.82.121/", "http://10.193.9.104/"],
+  "adtec-718": ["http://10.202.82.122/", "http://10.193.9.139/"],
+  "adtec-719": ["http://10.202.82.123/", "http://10.193.9.106/"],
+  "adtec-720": ["http://10.202.82.124/", "http://10.193.9.146/"],
+  "ateme-401": ["http://10.202.82.21/", "http://10.193.9.11/"],
+  "ateme-402": ["http://10.202.82.22/", "http://10.193.9.51/"],
+  "ateme-403": ["http://10.202.82.23/", "http://10.193.9.17/"],
+  "ateme-404": ["http://10.202.82.24/", "http://10.193.9.57/"],
+  "ateme-405": ["http://10.202.82.25/", "http://10.193.9.13/"],
+  "ateme-406": ["http://10.202.82.26/", "http://10.193.9.53/"],
+  "ateme-407": ["http://10.202.82.27/", "http://10.193.9.19/"],
+  "ateme-408": ["http://10.202.82.28/", "http://10.193.9.59/"],
+  "ateme-409": ["http://10.202.82.29/", "http://10.193.9.16/"],
+  "ateme-410": ["http://10.202.82.30/", "http://10.193.9.56/"],
+  "ateme-411": ["http://10.202.82.31/", "http://10.193.9.12/"],
+  "ateme-412": ["http://10.202.82.32/", "http://10.193.9.52/"],
+  "ateme-413": ["http://10.202.82.33/", "http://10.193.9.18/"],
+  "ateme-414": ["http://10.202.82.34/", "http://10.193.9.58/"],
+  "ateme-415": ["http://10.202.82.35/", "http://10.193.9.14/"],
+  "ateme-416": ["http://10.202.82.36/", "http://10.193.9.54/"],
+  "ateme-417": ["http://10.202.82.37/", "http://10.193.9.21/"],
+  "ateme-418": ["http://10.202.82.38/", "http://10.193.9.61/"],
+  "ateme-419": ["http://10.202.82.39/", "http://10.193.9.22/"],
+  "ateme-420": ["http://10.202.82.40/", "http://10.193.9.62/"],
+  "ateme-421": ["http://10.202.82.41/", "http://10.193.9.23/"],
+  "ateme-422": ["http://10.202.82.42/", "http://10.193.9.63/"],
+  "ateme-423": ["http://10.202.82.43/", "http://10.193.9.24/"],
+  "ateme-424": ["http://10.202.82.44/", "http://10.193.9.64/"],
+  "ateme-425": ["http://10.202.82.45/", "http://10.193.9.26/"],
+  "ateme-426": ["http://10.202.82.46/", "http://10.193.9.66/"],
+  "ateme-427": ["http://10.202.82.47/", "http://10.193.9.27/"],
+  "ateme-428": ["http://10.202.82.48/", "http://10.193.9.67/"],
+  "ateme-429": ["http://10.202.82.49/", "http://10.193.9.28/"],
+  "ateme-430": ["http://10.202.82.50/", "http://10.193.9.68/"],
+  "mediakind-301": ["http://10.202.82.85/", "http://10.193.9.36/"],
+  "mediakind-302": ["http://10.202.82.86/", "http://10.193.9.76/"],
+  "mediakind-303": ["http://10.202.82.87/", "http://10.193.9.41/"],
+  "mediakind-304": ["http://10.202.82.88/", "http://10.193.9.82/"],
+  "mediakind-305": ["http://10.202.82.89/", "http://10.193.9.38/"],
+  "mediakind-306": ["http://10.202.82.90/", "http://10.193.9.78/"],
+  "mediakind-307": ["http://10.202.82.91/", "http://10.193.9.39/"],
+  "mediakind-308": ["http://10.202.82.92/", "http://10.193.9.84/"],
+  "mediakind-309": ["http://10.202.82.93/", "http://10.193.9.37/"],
+  "mediakind-310": ["http://10.202.82.94/", "http://10.193.9.81/"],
+  "mediakind-311": ["http://10.202.82.95/", "http://10.193.9.42/"],
+  "mediakind-312": ["http://10.202.82.96/", "http://10.193.9.77/"],
+  "mediakind-313": ["http://10.202.82.97/", "http://10.193.9.43/"],
+  "mediakind-314": ["http://10.202.82.98/", "http://10.193.9.83/"],
+  "mediakind-315": ["http://10.202.82.99/", "http://10.193.9.44/"],
+  "mediakind-316": ["http://10.202.82.100/", "http://10.193.9.79/"],
+  "mediakind-317": ["http://10.202.82.101/", "http://10.193.9.46/"],
+  "mediakind-318": ["http://10.202.82.102/", "http://10.193.9.86/"],
+  "mediakind-319": ["http://10.202.82.103/", "http://10.193.9.47/"],
+  "mediakind-320": ["http://10.202.82.104/", "http://10.193.9.87/"],
+  "mediakind-321": ["http://10.202.84.11/", "http://10.202.118.207/"],
+  "mediakind-322": ["http://10.202.84.12/", "http://10.202.117.166/"],
+  "mediakind-323": ["http://10.202.84.13/", "http://10.202.118.208/"],
+  "mediakind-324": ["http://10.202.84.14/", "http://10.202.117.167/"],
+  "mediakind-325": ["http://10.202.84.15/", "http://10.202.118.209/"],
+  "mediakind-326": ["http://10.202.84.16/", "http://10.202.117.168/"],
+  "mediakind-327": ["http://10.202.84.17/", "http://10.202.118.196/"],
+  "mediakind-328": ["http://10.202.84.18/", "http://10.202.117.169/"],
+  "mediakind-329": ["http://10.202.84.19/", "http://10.202.118.199/"],
+  "mediakind-330": ["http://10.202.84.20/", "http://10.202.118.109/"],
+  "mediakind-331": ["http://10.202.84.21/", "http://10.202.118.157/"],
+  "mediakind-332": ["http://10.202.84.22/", "http://10.202.118.96/"],
+  "mediakind-333": ["http://10.202.84.23/", "http://10.202.118.158/"],
+  "mediakind-334": ["http://10.202.84.24/", "http://10.202.118.97/"],
+  "mediakind-335": ["http://10.202.84.25/", "http://10.202.118.159/"],
+  "mediakind-336": ["http://10.202.84.26/", "http://10.202.118.98/"],
+  "mediakind-337": ["http://10.202.84.27/", "http://10.202.118.146/"],
+  "mediakind-338": ["http://10.202.84.28/", "http://10.202.118.99/"],
+  "mediakind-339": ["http://10.202.84.29/", "http://10.202.118.147/"],
+  "mediakind-340": ["http://10.202.84.30/", "http://10.202.118.86/"],
+  "mediakind-341": ["http://10.202.84.31/", "http://10.202.118.148/"],
+  "mediakind-342": ["http://10.202.84.32/", "http://10.202.118.87/"],
+  "mediakind-343": ["http://10.202.84.33/", "http://10.202.118.149/"],
+  "mediakind-344": ["http://10.202.84.34/", "http://10.202.118.226/"],
+  "mediakind-345": ["http://10.202.84.35/", "http://10.202.118.227/"],
+  "mediakind-346": ["http://10.202.84.36/", "http://10.202.118.228/"],
+  "mediakind-347": ["http://10.202.84.37/", "http://10.202.118.229/"],
+  "mediakind-348": ["http://10.202.84.38/", "http://10.202.118.236/"],
+  "mediakind-349": ["http://10.202.84.39/", "http://10.202.118.237/"],
+  "mediakind-350": ["http://10.202.84.40/", "http://10.202.118.197/"],
+  "mediakind-351": ["http://10.202.84.41/", "http://10.202.117.156/"],
+  "mediakind-352": ["http://10.202.84.104/", "http://10.202.118.198/"],
+  "mediakind-353": ["http://10.202.84.105/", "http://10.202.117.157/"],
+  "mediakind-354": ["http://10.202.84.106/", "http://10.202.118.186/"],
+  "mediakind-355": ["http://10.202.84.107/", "http://10.202.117.158/"],
+  "mediakind-356": ["http://10.202.84.108/", "http://10.202.118.187/"],
+  "mediakind-357": ["http://10.202.84.109/", "http://10.202.117.159/"],
+  "util-01": ["http://10.193.7.64/"],
+  "util-02": ["http://10.193.7.103/"],
+  "util-03": ["http://10.193.7.66/"],
+  "util-04": ["http://10.193.7.104/"],
+  "util-05": ["http://10.193.7.67/"],
+  "util-06": ["http://10.193.7.106/"],
+  "util-07": ["http://10.193.7.68/"],
+  "util-08": ["http://10.193.7.107/"],
+  "util-09": ["http://10.193.7.69/"],
+  "util-10": ["http://10.193.7.108/"],
+  "util-11": ["http://10.193.7.111/"],
+  "util-12": ["http://10.193.7.109/"],
+  "util-13": ["http://10.193.7.112/"],
+  "util-14": ["http://10.193.7.116/"],
+  "util-15": ["http://10.193.7.113/"],
+  "util-16": ["http://10.193.7.117/"],
+  "util-17": ["http://10.193.7.114/"],
+  "util-18": ["http://10.193.7.118/"],
+  "util-19": ["http://10.193.7.121/"],
+  "util-20": ["http://10.193.7.119/"],
+  "util-21": ["http://10.193.7.122/"],
+  "util-22": ["http://10.193.7.42/"],
+  "util-23": ["http://10.193.7.21/"],
+  "util-24": ["http://10.193.7.41/"],
+  "util-25": ["http://10.193.7.22/"],
+  "util-26": ["http://10.193.5.51/"],
+  "util-27": ["http://10.193.5.11/"],
+  "util-28": ["http://10.193.5.57/"],
+  "util-29": ["http://10.193.5.17/"],
+  "util-30": ["http://10.193.5.53/"],
+  "util-31": ["http://10.193.5.13/"],
+  "util-32": ["http://10.193.5.59/"],
+  "util-33": ["http://10.193.5.19/"],
+  "util-34": ["http://10.193.7.128/"],
+  "util-35": ["http://10.193.7.129/"],
+  "util-36": ["http://10.193.5.37/"],
+  "util-37": ["http://10.193.5.42/"],
+  "util-38": ["http://10.193.5.46/"],
+  "util-39": ["http://10.193.5.116/"],
+  "util-40": ["http://10.193.5.133/"],
+  "util-41": ["http://10.193.5.134/"],
+  "util-42": ["http://10.193.5.136/"],
+  "util-43": ["http://10.193.5.138/"],
+  "util-44": ["http://10.193.5.141/"],
+  "util-45": ["http://10.193.5.143/"],
+  "util-46": ["http://10.193.5.146/"],
+  "util-47": ["http://10.193.7.63/"],
+  "util-48": ["http://10.193.7.82/"],
+  "util-49": ["http://10.193.7.83/"],
+  "util-50": ["http://10.193.7.84/"],
+  "util-51": ["http://10.193.5.36/"],
+  "util-52": ["http://10.193.5.108/"],
+  "util-53": ["http://10.193.5.111/"],
+  "util-90": ["http://10.193.5.147/"],
+  "util-91": ["http://10.193.5.117/"],
+  "util-92": ["http://10.193.5.148/"],
+  "util-93": ["http://10.193.5.118/"],
+  "util-94": ["http://10.193.5.149/"],
+  "util-95": ["http://10.193.5.119/"],
+  "itxr-001": ["http://10.202.33.63/"],
+  "itxr-002": ["http://10.202.33.66/"],
+  "itxr-003": ["http://10.202.33.69/"],
+  "itxr-004": ["http://10.202.33.72/"],
+  "itxr-005": ["http://10.202.33.75/"],
+  "itxr-006": ["http://10.202.33.78/"],
+  "itxr-007": ["http://10.202.33.81/"],
+  "itxr-008": ["http://10.202.33.84/"],
+  "itxr-009": ["http://10.202.33.87/"],
+  "itxr-010": ["http://10.202.33.90/"],
+  "itxr-011": ["http://10.202.33.93/"],
+  "itxr-012": ["http://10.202.33.96/"],
+  "itxr-013": ["http://10.202.33.63/"],
+  "itxr-014": ["http://10.202.33.66/"],
+  "itxr-015": ["http://10.202.33.69/"],
+  "itxr-016": ["http://10.202.33.72/"],
+  "itxr-017": ["http://10.202.33.75/"],
+  "itxr-018": ["http://10.202.33.78/"],
+  "itxr-019": ["http://10.202.33.81/"],
+  "itxr-020": ["http://10.202.33.84/"],
+  "itxr-021": ["http://10.202.33.87/"],
+  "itxr-022": ["http://10.202.33.90/"],
+  "itxr-023": ["http://10.202.33.93/"],
+  "itxr-024": ["http://10.202.33.96/"],
+  "itxr-025": ["http://10.202.33.63/"],
+  "itxr-026": ["http://10.202.33.66/"],
+  "itxr-027": ["http://10.202.33.69/"],
+  "itxr-028": ["http://10.202.33.72/"],
+  "itxr-029": ["http://10.202.33.75/"],
+  "itxr-030": ["http://10.202.33.78/"],
+  "itxr-031": ["http://10.202.33.81/"],
+  "itxr-032": ["http://10.202.33.84/"],
+  "itxr-033": ["http://10.202.33.87/"],
+  "itxr-034": ["http://10.202.33.90/"],
+  "itxr-035": ["http://10.202.33.93/"],
+  "itxr-036": ["http://10.202.33.96/"],
+  "itxr-037": ["http://10.202.33.63/"],
+  "itxr-038": ["http://10.202.33.66/"],
+  "itxr-039": ["http://10.202.33.69/"],
+  "itxr-040": ["http://10.202.33.72/"],
+  "itxr-041": ["http://10.202.33.75/"],
+  "itxr-042": ["http://10.202.33.78/"],
+  "itxr-043": ["http://10.202.33.81/"],
+  "itxr-044": ["http://10.202.33.84/"],
+  "itxr-045": ["http://10.202.33.87/"],
+  "itxr-046": ["http://10.202.33.90/"],
+  "itxr-047": ["http://10.202.33.93/"],
+  "itxr-048": ["http://10.202.33.96/"],
+  "itxr-049": ["http://10.202.33.63/"],
+  "itxr-050": ["http://10.202.33.66/"],
+  "itxr-051": ["http://10.202.33.69/"],
+  "itxr-052": ["http://10.202.33.72/"],
+  "itxr-053": ["http://10.202.33.75/"],
+  "itxr-054": ["http://10.202.33.78/"],
+  "itxr-055": ["http://10.202.33.81/"],
+  "itxr-056": ["http://10.202.33.84/"],
+  "itxr-057": ["http://10.202.33.87/"],
+  "itxr-058": ["http://10.202.33.90/"],
+  "itxr-059": ["http://10.202.33.93/"],
+  "itxr-060": ["http://10.202.33.96/"],
+  "itxr-061": ["http://10.202.33.63/"],
+  "itxr-062": ["http://10.202.33.66/"],
+  "itxr-063": ["http://10.202.33.69/"],
+  "itxr-064": ["http://10.202.33.72/"],
+  "itxr-065": ["http://10.202.33.75/"],
+  "itxr-066": ["http://10.202.33.78/"],
+  "itxr-067": ["http://10.202.33.81/"],
+  "itxr-068": ["http://10.202.33.84/"],
+  "itxr-069": ["http://10.202.33.87/"],
+  "itxr-070": ["http://10.202.33.90/"],
+  "itxr-071": ["http://10.202.33.93/"],
+  "itxr-072": ["http://10.202.33.96/"],
+  "j2k-201": ["http://10.202.82.12/", "http://10.193.5.112/"],
+  "j2k-202": ["http://10.202.82.12/", "http://10.193.5.142/"],
+  "j2k-203": ["http://10.202.82.12/", "http://10.193.5.109/"],
+  "j2k-204": ["http://10.202.82.13/", "http://10.193.5.139/"],
+  "j2k-205": ["http://10.202.82.13/", "http://10.193.5.114/"],
+  "j2k-206": ["http://10.202.82.13/", "http://10.193.5.144/"],
+  "j2k-207": ["http://10.202.82.13/", "http://10.193.7.131/"],
+  "j2k-208": ["http://10.202.82.13/", "http://10.193.7.132/"],
+  "j2k-209": ["http://10.202.82.13/", "http://10.193.7.133/"],
+  "j2k-251": ["http://10.202.82.12/"],
+  "j2k-252": ["http://10.202.82.12/"],
+  "j2k-253": ["http://10.202.82.12/"],
+  "j2k-261": ["http://10.202.82.14/"],
+  "j2k-262": ["http://10.202.82.14/"],
+  "j2k-263": ["http://10.202.82.14/"],
+  "j2k-264": ["http://10.202.82.14/"],
+  "j2k-265": ["http://10.202.82.14/"],
+  "j2k-266": ["http://10.202.82.14/"],
+  "stb-1": ["http://10.192.243.64/directv/directvremote_STB%20100.html"],
+  "stb-2": ["http://10.192.243.64/directv/directvremote_STB%20101.html"],
+  "stb-3": ["http://10.192.243.64/directv/directvremote_STB%20102.html"],
+  "stb-4": ["http://10.192.243.64/directv/directvremote_STB%20103.html"],
+  "stb-5": ["http://10.192.243.64/directv/directvremote_STB%20104.html"],
+  "stb-6": ["http://10.192.243.64/directv/directvremote_STB%20105.html"],
+  "stb-7": ["http://10.192.243.64/directv/directvremote_STB%20106.html"],
+  "stb-8": ["http://10.192.243.64/directv/directvremote_STB%20107.html"],
+  "stb-9": ["http://10.192.243.64/directv/directvremote_STB%20108.html"],
+  "stb-10": ["http://10.192.243.64/directv/directvremote_STB%20109.html"],
+  "stb-11": ["http://10.192.243.64/directv/directvremote_STB%20110.html"],
+  "stb-12": ["http://10.192.243.64/directv/directvremote_STB%20111.html"],
+  "stb-13": ["http://10.192.243.64/directv/directvremote_STB%20112.html"],
+  "stb-14": ["http://10.192.243.64/directv/directvremote_STB%20113.html"],
+  "stb-15": ["http://10.192.243.64/directv/directvremote_STB%20114.html"],
+  "stb-16": ["http://10.192.243.64/directv/directvremote_STB%20115.html"],
+  "stb-17": ["http://10.192.243.64/directv/directvremote_STB%20116.html"],
+  "stb-18": ["http://10.192.243.64/directv/directvremote_STB%20117.html"],
+  "stb-19": ["http://10.192.243.64/directv/directvremote_STB%20118.html"],
+  "stb-20": ["http://10.192.243.64/directv/directvremote_STB%20119.html"],
+  "stb-21": ["http://10.192.243.64/directv/directvremote_STB%20120.html"],
+  "stb-22": ["http://10.192.243.64/directv/directvremote_STB%20121.html"],
+  "stb-23": ["http://10.192.243.64/directv/directvremote_STB%20122.html"],
+  "stb-24": ["http://10.192.243.64/directv/directvremote_STB%20123.html"],
+  "stb-25": ["http://10.192.243.64/directv/directvremote_STB%20124.html"],
+  "stb-26": ["http://10.192.243.64/directv/directvremote_STB%20127.html"],
+  "valid-31": ["http://10.202.109.17/", "http://10.202.109.10/"],
+  "valid-32": ["http://10.202.109.18/", "http://10.202.109.10/"],
+  "valid-33": ["http://10.202.109.22/", "http://10.202.109.10/"],
+  "valid-34": ["http://10.202.109.23/", "http://10.202.109.10/"],
+  "valid-35": ["http://10.202.109.15/", "http://10.202.109.11/"],
+  "valid-36": ["http://10.202.109.16/", "http://10.202.109.11/"],
+  "valid-37": ["http://10.202.109.21/", "http://10.202.109.11/"]
+};
+
+function equipmentCheckboxes() {
+  return Array.from(document.querySelectorAll('input[type="checkbox"][data-id]'));
+}
+
+function updateSelectedCount() {
+  const n = equipmentCheckboxes().filter(cb => cb.checked).length;
+  document.getElementById('selectedCount').textContent = n + ' selected';
+}
+
+function clearAllSelections() {
+  equipmentCheckboxes().forEach(cb => { cb.checked = false; });
+  updateSelectedCount();
+}
+
+function normalizeQuery(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[_\-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function scoreMatch(query, aliases, dataId, visibleLabel, groupName) {
+  const q = normalizeQuery(query);
+  if (!q) return -1;
+  const candidates = new Set();
+  (aliases || []).forEach(a => candidates.add(normalizeQuery(a)));
+  candidates.add(normalizeQuery(visibleLabel));
+  candidates.add(normalizeQuery(groupName + ' ' + visibleLabel));
+  candidates.add(normalizeQuery(dataId.replace(/-/g, ' ')));
+
+  let best = -1;
+  for (const c of candidates) {
+    if (!c) continue;
+    if (c === q) best = Math.max(best, 100);
+    else if (c.endsWith(' ' + q) || c.startsWith(q + ' ')) best = Math.max(best, 90);
+    else if (c.includes(q)) best = Math.max(best, 70);
+    else {
+      // tolerant: strip common prefixes from query and retry
+      const stripped = q
+        .replace(/^(rx|tx)\s+/, '')
+        .replace(/^(ird|j2k|stb|util\s+itxe|util\s+itxr|util|itxe|itxr|mediakind|mk|ateme|adtec)\s+/, '');
+      if (stripped && stripped !== q) {
+        if (c === stripped || c.endsWith(' ' + stripped) || /\b/.test(c) && c.split(' ').includes(stripped)) {
+          best = Math.max(best, 85);
+        } else if (c.includes(stripped)) {
+          best = Math.max(best, 60);
+        }
+      }
+    }
+  }
+  return best;
+}
+
+function findBestCheckbox(query) {
+  let best = null;
+  let bestScore = 0;
+  equipmentCheckboxes().forEach(cb => {
+    const label = cb.closest('label');
+    const group = cb.closest('.group');
+    const groupName = group ? (group.querySelector('h3')?.textContent || '') : '';
+    const visible = label ? label.textContent.trim() : '';
+    const aliases = (cb.getAttribute('data-aliases') || '').split(',').map(s => s.trim()).filter(Boolean);
+    const score = scoreMatch(query, aliases, cb.getAttribute('data-id'), visible, groupName);
+    if (score > bestScore) {
+      bestScore = score;
+      best = cb;
+    }
+  });
+  return bestScore >= 60 ? best : null;
+}
+
+function flashSearch(ok) {
+  const input = document.getElementById('equipSearch');
+  input.classList.remove('match-ok', 'match-bad');
+  void input.offsetWidth;
+  input.classList.add(ok ? 'match-ok' : 'match-bad');
+  setTimeout(() => input.classList.remove('match-ok', 'match-bad'), 450);
+}
+
+function flashLabel(cb) {
+  const label = cb.closest('label');
+  if (!label) return;
+  label.classList.remove('flash-match');
+  void label.offsetWidth;
+  label.classList.add('flash-match');
+  setTimeout(() => label.classList.remove('flash-match'), 700);
+}
+
+function selectFromSearch() {
+  const input = document.getElementById('equipSearch');
+  const q = input.value;
+  const match = findBestCheckbox(q);
+  if (match) {
+    match.checked = true;
+    flashLabel(match);
+    flashSearch(true);
+    updateSelectedCount();
+    input.select();
+  } else {
+    flashSearch(false);
+  }
+  // keep focus for rapid multi-select
+  input.focus();
+}
+
+document.getElementById('equipSearch').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    selectFromSearch();
+  }
+});
+
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.matches && e.target.matches('input[type="checkbox"][data-id]')) {
+    updateSelectedCount();
+  }
+});
+
+function openSelectedIPs() {
+  const order = ['j2k', 'mediakind', 'ateme', 'adtec', 'util', 'itxr', 'stb', 'valid'];
+  const skipITXEs = document.getElementById('skipITXEs').checked;
+
+  const selected = equipmentCheckboxes().filter(cb => cb.checked);
+
+  const sorted = selected.sort((a, b) => {
+    const [groupA, numA] = a.getAttribute('data-id').split('-');
+    const [groupB, numB] = b.getAttribute('data-id').split('-');
+    const groupOrderDiff = order.indexOf(groupA) - order.indexOf(groupB);
+    return groupOrderDiff !== 0 ? groupOrderDiff : parseInt(numA, 10) - parseInt(numB, 10);
+  });
+
+  const tabsToOpen = [];
+
+  sorted.forEach(cb => {
+    const id = cb.getAttribute('data-id');
+    const parts = id.split('-');
+    const group = parts[0];
+    const number = parts.slice(1).join('-');
+    const ips = ipMap[id] || [];
+
+    ips.forEach((ip, idx) => {
+      if (skipITXEs) {
+        // Attached ITXE is the 2nd+ URL on J2K/IRD rows only (not VALID reader+gen).
+        const itxeGroups = ['j2k', 'mediakind', 'ateme', 'adtec'];
+        if (ips.length > 1 && idx > 0 && itxeGroups.indexOf(group) !== -1) return;
+        // Standalone UTIL/J2K ITXE-only rows (10.193) honor the same skip toggle as 2.0.
+        if (ips.length === 1 && ip.indexOf('10.193') !== -1) return;
+      }
+      tabsToOpen.push({ ip: ip, number: number });
+    });
+  });
+
+  tabsToOpen.reverse();
+
+  tabsToOpen.forEach(entry => {
+    const win = window.open(entry.ip, '_blank');
+    if (entry.ip.indexOf('10.193') !== -1 && win) {
+      win.onload = function() {
+        win.document.title = 'X' + entry.number;
+      };
+    }
+  });
+}
+
+updateSelectedCount();
+</script>
+
+</body>
+</html>
