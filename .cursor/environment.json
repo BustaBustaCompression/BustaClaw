@@ -1,0 +1,15 @@
+{
+  "name": "BustaClaw",
+  "install": "npm ci",
+  "terminals": [
+    {
+      "name": "server",
+      "command": "npm run dev:server"
+    },
+    {
+      "name": "web",
+      "command": "npm run dev:web"
+    }
+  ],
+  "ports": [4000, 5173]
+}

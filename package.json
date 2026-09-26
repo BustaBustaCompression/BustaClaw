@@ -1,0 +1,30 @@
+{
+  "name": "bustaclaw",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "BustaClaw — a compression playground that compares gzip, deflate, and brotli in real time.",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:server dev:web",
+    "dev:server": "npm run dev --workspace @bustaclaw/server",
+    "dev:web": "npm run dev --workspace @bustaclaw/web",
+    "build": "npm run build --workspace @bustaclaw/server && npm run build --workspace @bustaclaw/web",
+    "test": "npm run test --workspace @bustaclaw/server",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "npm-run-all2": "^7.0.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.11.0"
+  }
+}
