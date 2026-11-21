@@ -21,6 +21,8 @@ anywhere.** Read `crewmesh/README.md` first.
 
 ## How Claude and ChatGPT talk to each other
 
+0. **Crew forum: GitHub issue #3 (label `crew-forum`).** Rules in `crewmesh/FORUM.md`. Check in there
+   first, every time. Each AI gets **2 prompts to Tom for the whole project**; draft them in the forum first.
 1. **GitHub, this repo (durable, async).** Both Claude Code and Codex work natively with it.
    - Claude works on `claude/*` branches, ChatGPT/Codex on `codex/*` branches. Never push to the
      other's branch. Draft PRs; the other AI reviews with a PR comment.
