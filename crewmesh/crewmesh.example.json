@@ -1,0 +1,56 @@
+{
+  "_comment": "Copy to crewmesh.json on each box and change 'node', 'bind' and 'peers'. Token goes in token_file (mode 600), never here.",
+  "node": "pifive",
+  "bind": "100.75.107.88",
+  "port": 8765,
+  "token_file": "~/.config/crewmesh/token",
+  "poll_seconds": 60,
+  "down_after_seconds": 300,
+  "escalate_after_seconds": 900,
+  "peers": {
+    "tom-pi": "http://tom-pi:8765",
+    "nyuknyuk": "http://nyuknyuk:8765"
+  },
+  "checks": {
+    "disk_path": "/",
+    "disk_warn_pct": 90,
+    "mem_warn_mb": 300,
+    "http": {
+      "jellyfin": "http://127.0.0.1:8096/health"
+    }
+  },
+  "escalation_order": ["claude", "codex"],
+  "agents": {
+    "local": {
+      "_comment": "Free. Runs on the NUC; the Pis call it over Tailscale. Use 127.0.0.1 on the NUC itself.",
+      "kind": "ollama",
+      "url": "http://nyuknyuk:11434",
+      "model": "qwen2.5:3b",
+      "timeout": 180
+    },
+    "claude": {
+      "kind": "cmd",
+      "argv": ["claude", "-p", "--permission-mode", "plan"],
+      "cwd": "~/rc",
+      "daily_budget": 3,
+      "timeout": 900
+    },
+    "codex": {
+      "_comment": "ChatGPT plan via the Codex CLI (codex login). Verify flags with `codex exec --help` on the box.",
+      "kind": "cmd",
+      "argv": ["codex", "exec", "--sandbox", "read-only", "-"],
+      "cwd": "~/rc",
+      "daily_budget": 3,
+      "timeout": 900
+    },
+    "grok": {
+      "_comment": "xAI API is billed per token, separate from the Grok app subscription. Off until Tom says.",
+      "enabled": false,
+      "kind": "openai",
+      "url": "https://api.x.ai/v1",
+      "model": "grok-4",
+      "api_key_env": "XAI_API_KEY",
+      "daily_budget": 3
+    }
+  }
+}

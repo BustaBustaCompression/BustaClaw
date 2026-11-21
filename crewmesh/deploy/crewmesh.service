@@ -1,0 +1,17 @@
+# /etc/systemd/system/crewmesh.service  (Pis / NUC on Ubuntu)
+[Unit]
+Description=crewmesh peer watch + AI wake
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+User=tom
+WorkingDirectory=/home/tom/crewmesh
+ExecStart=/usr/bin/python3 /home/tom/crewmesh/crewmesh.py --config /home/tom/crewmesh/crewmesh.json serve
+Restart=always
+RestartSec=10
+# Agents (claude, codex) run as tom with tom's logins; nothing here needs root.
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
