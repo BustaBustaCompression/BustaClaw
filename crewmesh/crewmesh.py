@@ -64,8 +64,11 @@ def load_config(path: Path) -> dict:
     tf = cfg.get("token_file")
     if not token and tf and Path(tf).expanduser().exists():
         token = Path(tf).expanduser().read_text().strip()
-    if len(token) < 16:
-        raise SystemExit("crewmesh: set a shared token of 16+ chars (CREWMESH_TOKEN or token_file)")
+    cfg.setdefault("trusted_ips", [])
+    if token and len(token) < 16:
+        raise SystemExit("crewmesh: token must be 16+ chars")
+    if not token and not cfg["trusted_ips"]:
+        raise SystemExit("crewmesh: set trusted_ips (peers' Tailscale IPs) and/or a 16+ char token")
     cfg["_token"] = token
     Path(cfg["state_dir"]).mkdir(parents=True, exist_ok=True)
     return cfg
@@ -255,8 +258,10 @@ class Agents:
 
 def call(url: str, token: str, path: str, payload: dict | None = None, timeout: float = 8) -> dict:
     data = json.dumps(payload).encode() if payload is not None else None
-    req = urllib.request.Request(url.rstrip("/") + path, data,
-                                 {"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+    headers = {"Content-Type": "application/json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(url.rstrip("/") + path, data, headers)
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read())
 
@@ -434,8 +439,14 @@ def make_handler(node: Node):
             self.wfile.write(body)
 
         def _authed(self) -> bool:
+            # Tailscale (WireGuard) authenticates the source address, so a peer's 100.x IP is its identity.
+            trusted = set(node.cfg.get("trusted_ips", []))
+            if node.cfg.get("trust_localhost", True):
+                trusted |= {"127.0.0.1", "::1"}
+            if self.client_address[0] in trusted:
+                return True
             got = self.headers.get("Authorization", "").removeprefix("Bearer ").strip()
-            if hmac.compare_digest(got.encode(), token.encode()):
+            if token and hmac.compare_digest(got.encode(), token.encode()):
                 return True
             self._send(401, {"ok": False, "error": "bad token"})
             return False

@@ -1,9 +1,9 @@
 {
-  "_comment": "Copy to crewmesh.json on each box and change 'node', 'bind' and 'peers'. Token goes in token_file (mode 600), never here.",
+  "_comment": "Copy to crewmesh.json on each box. Fill bind (this box: tailscale ip -4) and trusted_ips (the two peers: tailscale ip -4 <name>). No token needed on the tailnet.",
   "node": "pifive",
-  "bind": "100.75.107.88",
+  "bind": "100.x.x.x",
   "port": 8765,
-  "token_file": "~/.config/crewmesh/token",
+  "trusted_ips": ["100.x.x.x", "100.y.y.y"],
   "poll_seconds": 60,
   "down_after_seconds": 300,
   "escalate_after_seconds": 900,

@@ -3,7 +3,7 @@
 The NUC is planned to move to Ubuntu Server (Regulator's cutover note). Until then:
 
 1. Install Python 3.11+ from python.org (tick "Add to PATH").
-2. Copy `crewmesh.py` and `crewmesh.json` to `C:\crewmesh\`. Token in `C:\crewmesh\token` (`token_file`).
+2. Copy `crewmesh.py` and `crewmesh.json` to `C:\crewmesh\`. `trusted_ips` = the two Pis' Tailscale IPs.
 3. In `crewmesh.json`: `"node": "nyuknyuk"`, `"bind"`: the NUC's `tailscale ip -4`, `"checks": {"disk_path": "C:\\"}`.
    `local` agent: `"url": "http://127.0.0.1:11434"`.
 4. Task Scheduler → Create Task: "Run whether user is logged on or not", trigger "At startup",

@@ -5,14 +5,10 @@ set -euo pipefail
 NODE="${1:?node name}"
 DEST=/home/tom/crewmesh
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
-mkdir -p "$DEST" ~/.config/crewmesh
+mkdir -p "$DEST"
 cp "$SRC/crewmesh.py" "$DEST/"
 if [ ! -f "$DEST/crewmesh.json" ]; then
   sed "s/\"node\": \"pifive\"/\"node\": \"$NODE\"/" "$SRC/crewmesh.example.json" > "$DEST/crewmesh.json"
-  echo ">> edit $DEST/crewmesh.json: bind (tailscale ip -4), peers (drop $NODE, add the others)"
-fi
-if [ ! -f ~/.config/crewmesh/token ]; then
-  echo ">> put the SAME shared token on all three boxes: ~/.config/crewmesh/token (chmod 600)"
-  echo "   generate once with: python3 -c 'import secrets;print(secrets.token_urlsafe(32))'"
+  echo ">> edit $DEST/crewmesh.json: bind (tailscale ip -4), trusted_ips + peers (the other two boxes)"
 fi
 echo ">> then: sudo cp $SRC/deploy/crewmesh.service /etc/systemd/system/ && sudo systemctl enable --now crewmesh"

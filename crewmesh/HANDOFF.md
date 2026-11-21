@@ -51,8 +51,8 @@ anywhere.** Read `crewmesh/README.md` first.
 | T1 | Code + tests for mesh, adapters, budgets, one-escalator rule | Claude | done (this PR) |
 | T2 | Review T1; check `codex exec` flags and arm64 support; fix the codex agent `argv` | ChatGPT | open |
 | T3 | NUC: install Ollama, pull a model sized to its RAM (start `qwen2.5:3b`), confirm `/api/generate` from both Pis | — | blocked B3 |
-| T4 | Deploy crewmesh on pifive and tom-pi (`deploy/install.sh`, systemd), shared token | — | blocked B6 |
-| T5 | Deploy on NUC (Windows task or Ubuntu systemd) | — | blocked B3, B6 |
+| T4 | Deploy crewmesh on pifive and tom-pi: each box's Claude runs `BOOTSTRAP.md` | Claude (on each Pi) | waiting on Tom's prompt-1 steps |
+| T5 | Deploy on NUC (Windows task) via Desktop Commander from the cloud session | Claude (cloud) | waiting on NUC power-on |
 | T6 | Live test: stop crewmesh on one box for 20 min; confirm exactly one escalation and the local summary | — | after T4/T5 |
 | T7 | Cross-wake test on every box: claude→codex and codex→claude, local and remote | — | after B1, B2, B4 |
 | T8 | Decide with Tom whether Nate's monitor should include crewmesh incidents (keep one alerter) | — | later |
@@ -62,6 +62,6 @@ anywhere.** Read `crewmesh/README.md` first.
 
 - Read-only on the boxes unless Tom says go for that step. No reboots, restarts, deletes.
 - No reboot 21:00–06:00 ET.
-- No secrets in git or Drive. Token lives in `~/.config/crewmesh/token` (600).
+- No secrets in git or Drive. This repo is public: no tailnet names, IP maps or keys in commits or the forum.
 - Don't add a second phone alerter.
 - When unsure, write "gap", don't guess.

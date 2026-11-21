@@ -19,7 +19,7 @@ FAKE = [PY, "-c", "import sys; d=sys.stdin.read(); print('FAKE:' + sys.argv[1] +
 
 def make_cfg(name, port, peers, tmp):
     return {
-        "node": name, "bind": "127.0.0.1", "port": port, "_token": TOKEN,
+        "node": name, "bind": "127.0.0.1", "port": port, "_token": TOKEN, "trust_localhost": False,
         "poll_seconds": 0.2, "down_after_seconds": 0.5, "escalate_after_seconds": 0.5,
         "state_dir": str(Path(tmp) / name), "peers": peers,
         "checks": {"disk_path": "/", "disk_warn_pct": 101, "mem_warn_mb": 0},
@@ -76,6 +76,13 @@ class Mesh(unittest.TestCase):
         with self.assertRaises(urllib.error.HTTPError) as e:
             cm.call(self.url("pifive"), "wrong-token-xxxxxxxx", "/status")
         self.assertEqual(e.exception.code, 401)
+
+    def test_trusted_ip_needs_no_token(self):
+        with self.assertRaises(urllib.error.HTTPError):
+            cm.call(self.url("pifive"), "", "/status")
+        self.nodes["pifive"].cfg["trusted_ips"] = ["127.0.0.1"]
+        st = cm.call(self.url("pifive"), "", "/status")
+        self.assertEqual(st["node"], "pifive")
 
     def test_everyone_sees_everyone(self):
         for n in self.nodes.values():

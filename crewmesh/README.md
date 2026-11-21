@@ -9,7 +9,7 @@ One file (`crewmesh.py`), Python standard library only, runs on Linux and Window
 ## How it works
 
 ```
-        pifive  <──── HTTP inside Tailscale (WireGuard), shared token ────>  tom-pi
+        pifive  <──── HTTP inside Tailscale (WireGuard) ────>  tom-pi
           ▲                                                                            ▲
           └──────────────────────────────  nyuknyuk (NUC)  ───────────────────────────┘
                                          Ollama lives here
@@ -74,8 +74,10 @@ Claude Code or Codex on any box can run those same commands; that is how they wa
 Pis / NUC on Ubuntu: `deploy/install.sh <node>` then the systemd unit it prints.
 NUC on Windows: `deploy/windows-task.md`.
 
-Same token on all three boxes, in `~/.config/crewmesh/token`, mode 600. Bind to the box's
-Tailscale IP (`tailscale ip -4`), not `0.0.0.0`.
+Auth: Tailscale (WireGuard) already proves who sent each packet, so each box trusts only its two
+peers' Tailscale IPs (`trusted_ips`) plus localhost. No shared secret to hand around. An optional
+token (`token_file`, mode 600) also works. Bind to the box's Tailscale IP (`tailscale ip -4`),
+not `0.0.0.0`. Step-by-step for each box's own Claude: `BOOTSTRAP.md`.
 
 ## Tests
 
@@ -88,8 +90,9 @@ rule, local summary before cloud wake, daily budget.
 
 ## Security notes
 
-- Anyone with the token can make an AI on another box read things. Keep the token off Drive,
-  out of git, mode 600.
+- Any device that can send from a trusted Tailscale IP can wake agents. Only the three boxes are
+  listed. Tailscale ACLs can narrow port 8765 further.
+- This repo is **public**. No hostnames-to-IP maps, tailnet names, tokens or keys in git or the forum.
 - Port 8765 listens on the Tailscale IP only. Tailscale ACLs can narrow it to these three boxes.
 - Messages are untrusted input to the agents (prompt injection). That's why every wake is
   read-only and the agents only propose commands.
